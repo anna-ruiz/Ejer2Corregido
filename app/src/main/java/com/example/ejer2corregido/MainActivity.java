@@ -14,7 +14,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.ejer2corregido.Actividades.CrearBiciActivity;
 import com.example.ejer2corregido.Actividades.CrearCocheActivity;
+import com.example.ejer2corregido.Actividades.CrearMotoActivity;
 import com.example.ejer2corregido.Modelos.Bici;
 import com.example.ejer2corregido.Modelos.Coche;
 import com.example.ejer2corregido.Modelos.Moto;
@@ -82,9 +84,56 @@ public class MainActivity extends AppCompatActivity {
         btnCrearMoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                launcherMotos.launch(new Intent(MainActivity.this, CrearMotoActivity.class));
             }
         });
+        launcherMotos = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK){ //Comprobamos si finalizó con exito
+                            if (result.getData() != null && result.getData().getExtras() != null){ //COMPRUEBA SI HAY INTENT Y SI TIENE UN BUNDLE DENTRO!!!
+                                Moto moto = (Moto) result.getData().getExtras().getSerializable("MOTO"); //Le decimos q queremos coger la info asignada a esa clave
+                                listaMotos.add(moto);
+                                txtCantMotos.setText("Motos: "+listaMotos.size());
+                            }else {
+                                Toast.makeText(MainActivity.this, "No se han pasado los datos", Toast.LENGTH_SHORT).show();
+                            }
+                        }else {
+                            Toast.makeText(MainActivity.this, "Actividad Cancelada", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+
+
+        btnCrearBici.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launcherBicis.launch(new Intent(MainActivity.this, CrearBiciActivity.class));
+            }
+        });
+        launcherBicis = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() { //le decimos q queremos q ocurra cuando vuelva de la actividad
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK){ //Comprobamos si finalizó con exito
+                            if (result.getData() != null && result.getData().getExtras() != null){ //COMPRUEBA SI HAY INTENT Y SI TIENE UN BUNDLE DENTRO!!!
+                                Bici bici = (Bici) result.getData().getExtras().getSerializable("COCHE"); //Le decimos q queremos coger la info asignada a esa clave
+                                listaBicis.add(bici);
+                                txtCantBicis.setText("Bicis: "+listaBicis.size());
+                            }else {
+                                Toast.makeText(MainActivity.this, "No se han pasado los datos", Toast.LENGTH_SHORT).show();
+                            }
+                        }else {
+                            Toast.makeText(MainActivity.this, "Actividad Cancelada", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+
 
     }
 
